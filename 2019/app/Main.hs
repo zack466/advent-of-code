@@ -41,25 +41,38 @@ day2B input = do
     return ()
 
 -- Day 3
-type Point = (Int, Int)
-type Segment = (Point, Point)
+{-# LANGUAGE MultiParamTypeClasses, TypeFamilies #-}
+class Addable a b where
+    type Result a
+    (|+|) :: a -> b -> Result a b
 
-dot :: Point -> Point -> Int
-dot (x, y) (p, q) = x * y + p * q
+data Point t = Point t t
+    deriving (Eq, Show)
+data Segment t = Segment (t Point) (t Point)
+    deriving (Eq, Show)
 
-x = fst
-y = snd
+instance Addable Point Point where
+    type Result Point Point = Point
+    (Point a b) |+| (Point c d) = Point (a + c) (b + d)
 
-segments :: String -> [Segment]
+dot (Point x y) (Point p q) = x * y + p * q
+
+from (Segment x _) = x
+to (Segment _ y) = y
+
+x (Point a _) = a
+y (Point _ b) = b
+
+segments :: String -> [t Segment]
 segments input =
     let split = words $ replaceChar ',' ' ' input
         f :: [Segment] -> String -> [Segment]
         f (x:xs) (c:ch) =
             case c of
-            'U' -> (snd x, (fst (snd x), snd (snd x) + read ch)) : x : xs
-            'R' -> (snd x, (fst (snd x) + read ch, snd (snd x))) : x : xs
-            'D' -> (snd x, (fst (snd x), snd (snd x) - read ch)) : x : xs
-            'L' -> (snd x, (fst (snd x) - read ch, snd (snd x))) : x : xs
+            'U' -> Segment (to x) (Point (x (to x)), second (second x) + read ch) : x : xs
+            'R' -> Segment (to x) (first (second x) + read ch, second (second x)) : x : xs
+            'D' -> Segment (to x) (first (second x), second (second x) - read ch) : x : xs
+            'L' -> Segment (to x) (first (second x) - read ch, second (second x)) : x : xs
             _ -> error "invalid direction"
         f _ _ = error "invalid"
     in
@@ -71,9 +84,9 @@ segments input =
 -- P = ( -Ey, Ex )
 -- h = ( (A-C) * P ) / ( F * P )
 -- if 0 < h < 1, intersection at C + F*h
-intersection :: Segment -> Segment -> Maybe Point
-intersection ((ax, ay), (bx, by)) ((cx, cy), (dx, dy)) =
-    let e = (bx - ax, by - ay)
+intersection :: Num t => Segment t -> Segment t -> Maybe (Point t)
+intersection (Segment a@(Point ax ay) b@(Point bx by)) (Segment c@(Point cx cy) d@(Point dx dy)) =
+    let e = a - c
         f = (dx - cx, dy - cy)
         p = (- (y e), x e)
         fp = f `dot` p
@@ -85,8 +98,8 @@ intersection ((ax, ay), (bx, by)) ((cx, cy), (dx, dy)) =
     else
         Nothing
 
-manhattan :: Point -> Int
-manhattan (x, y) = x + y
+manhattan :: Point t -> t
+manhattan (Point x y) = x + y
 
 day3A :: String -> IO ()
 day3A input = do
