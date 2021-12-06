@@ -1,5 +1,5 @@
 .PHONY: all
-all: day1 day2 day3
+all: day1 day2 day3 day4
 
 day1:
 	ghc -o day1 day1.hs && ./day1 < day1.in
