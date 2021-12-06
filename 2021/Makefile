@@ -10,8 +10,12 @@ day2:
 day3:
 	gcc -o day3 day3.c && ./day3
 
+day4:
+	javac Day4.java && java Day4
+
 .PHONY: clean
 clean:
 	rm -f day1 day1.hi day1.o \
 		day2 day2.cmx day2.cmi day2.o \
-		day3
+		day3 \
+		Day4.class Score.class
