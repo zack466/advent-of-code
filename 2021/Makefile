@@ -1,5 +1,5 @@
 .PHONY: all
-all: day1 day2 day3 day4
+all: day1 day2 day3 day4 day5
 
 day1:
 	ghc -o day1 day1.hs && ./day1 < day1.in
@@ -12,6 +12,9 @@ day3:
 
 day4:
 	javac Day4.java && java Day4
+
+day5:
+	mit-scheme --quiet < day5.scm
 
 .PHONY: clean
 clean:
