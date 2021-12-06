@@ -2,22 +2,27 @@
 (define (print x) (display x) (newline))
 (define (repeat n f) (if (= n 0) '() (begin (f) (repeat (- n 1) f))))
 (define (ignore-chars n f) (repeat n (lambda () (read-char f))))
-(define (tails ls) (if (null? ls) '() (cons ls (tails (cdr ls)))))
 (define (between a b x) (or (and (<= a x) (<= x b)) (and (>= a x) (>= x b))))
 (define (inc x) (+ 1 x))
+(define (dec x) (- x 1))
+(define (sum ls) (reduce + 0 ls))
+
+(define (vector-count pred? v)
+  (sum (map (lambda (idx)
+              (let ((x (vector-ref v idx)))
+                (if (pred? x) 1 0)))
+            (range 0 (- (vector-length v) 1)))))
 
 (define (range a b)
-  (cond ((< a b) (cons a (range (+ a 1) b)))
-        ((> a b) (cons a (range (- a 1) b)))
-        (else (list a))))
+  (define (iter x y acc)
+    (cond ((< x y) (iter (inc x) y (cons x acc)))
+          ((> x y) (iter x (inc y) (cons y acc)))
+          (else (cons x acc))))
+  (if (< a b) (iter a b '()) (reverse (iter a b '()))))
 
-; given (a b c d ...) and f, does (f a b), (f a c) (f a d) ... (f b c), (f b d) ...
-(define (for-all-pairs f x)
-  (define (pairs ls) (map (lambda (x) (f (car ls) x)) (cdr ls)))
-  (map pairs (tails x)))
-
-; point (x, y)
 (define (point x y) (list x y))
+(define x car)
+(define y cadr)
 
 ; line segment object from (x1, y2) to (x2, y2)
 (define (line-segment x1 y1 x2 y2) (list x1 y1 x2 y2))
@@ -54,70 +59,40 @@
     ((horizontal? l) (map (lambda (x) (list x (y1 l))) (range (x1 l) (x2 l))))
     ((diagonal? l) (zip (range (x1 l) (x2 l)) (range (y1 l) (y2 l))))))
 
-(define (intersecting? p q)
-  (cond
-    ((and (vertical? p) (vertical? q))
-     (and (= (x1 p) (x1 q)) (or
-                              (between (y1 q) (y2 q) (y1 p))
-                              (between (y1 q) (y2 q) (y2 p))
-                              (between (y1 p) (y2 p) (y2 q))
-                              (between (y1 p) (y2 p) (y2 q)))))
-    ((and (horizontal? p) (horizontal? q))
-     (and (= (y1 p) (y1 q)) (or
-                              (between (x1 q) (x2 q) (x1 p))
-                              (between (x1 q) (x2 q) (x2 p))
-                              (between (x1 p) (x2 p) (x2 q))
-                              (between (x1 p) (x2 p) (x2 q)))))
-    ((and (vertical? p) (horizontal? q))
-     (and (between (y1 p) (y2 p) (y1 q)) (between (x1 q) (x2 q) (x1 p))))
-    ((and (horizontal? p) (vertical? q))
-     (and (between (y1 q) (y2 q) (y1 p)) (between (x1 p) (x2 p) (x1 q))))
-    (else #f)))
+(define board-size 1000)
 
-(define (num-intersections p q)
-  (cond
-    ((and (vertical? p) (horizontal? q) (intersecting? p q)) 1)
-    ((and (horizontal? p) (vertical? q) (intersecting? p q)) 1)
-    ((and (vertical? p) (vertical? q) (intersecting? p q))
-     (let ((y-coords (sort (list (y1 p) (y2 p) (y1 q) (y2 q)) <))) (+ 1 (- (caddr y-coords) (cadr y-coords)))))
-    ((and (horizontal? p) (horizontal? q) (intersecting? p q))
-     (let ((x-coords (sort (list (x1 p) (x2 p) (x1 q) (x2 q)) <))) (+ 1 (- (caddr x-coords) (cadr x-coords)))))
-    (else 0)))
+(define (board-row b n)
+  (map (lambda (i)
+         (vector-ref b (+ i (* board-size n))))
+       (range 0 (dec board-size))))
 
-; returns a list of the intersecting points of lines p and q
-(define (all-intersections p q)
-  ; (define n (num-intersections p q))
-  ; (cond ((= n 0) '())
-  ;       ((and (vertical? p) (horizontal? q)) (list (list (x1 p) (y1 q))))
-  ;       ((and (horizontal? p) (vertical? q)) (list (list (x1 q) (y1 p))))
-  ;       ((and (vertical? p) (vertical? q))
-  ;        (let ((y-coords (sort (list (y1 p) (y2 p) (y1 q) (y2 q)) <)))
-  ;          (map (lambda (y) (list (x1 p) y)) (range (caddr y-coords) (cadr y-coords)))
-  ;          ))
-  ;       ((and (horizontal? p) (horizontal? q))
-  ;        (let ((x-coords (sort (list (x1 p) (x2 p) (x1 q) (x2 q)) <)))
-  ;          (map (lambda (x) (list x (y1 p))) (range (caddr x-coords) (cadr x-coords)))))))
-  (length (append-map
-            (lambda (point)
-              (if (find (lambda (z) (= z point)))))))
+(define (print-board b)
+  (map (lambda (row)
+         (print (board-row b row)))
+       (range 0 (dec board-size))))
 
 (define (solA lines)
-  (define intersections (make-equal-hash-table))
-    (for-all-pairs
-      (lambda (x y)
-        (map
-          (lambda (inter) (hash-table-set! intersections inter #t))
-          (all-intersections x y)))
-      lines)
-    ; (print (hash-table-keys intersections))
-    (print (hash-table-size intersections)))
+  (define board (make-vector (square board-size) 0)) ; from (0,0) to (999, 999)
+  (map (lambda (line)
+         (map (lambda (point)
+                (let ((idx (+ (x point) (* (y point) board-size))))
+                  (vector-set! board idx (inc (vector-ref board idx)))))
+              (points-on-line line)))
+       lines)
+  ; (print-board board)
+  (print (vector-count (lambda (x) (< 1 x)) board)))
 
-(call-with-input-file "day5.in"
+(define INFILE "day5.in")
+
+; solA
+(call-with-input-file INFILE
   (lambda (f)
     (define lines (filter (lambda (x) (or (horizontal? x) (vertical? x))) (read-all read-line-segment f)))
-    ; (for-all-pairs (lambda (x y) (display x) (display y) (print (all-intersections x y))) lines)
     (solA lines)))
 
-; (define a (list 4 1 4 3))
-; (define b (list 4 1 4 3))
-; (print (all-intersections a b))
+; solB
+; 22416 too high
+(call-with-input-file INFILE
+  (lambda (f)
+    (define lines (read-all read-line-segment f))
+    (solA lines)))
