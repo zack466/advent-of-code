@@ -1,5 +1,5 @@
 .PHONY: all
-all: day1 day2 day3 day4 day5 day6
+all: day1 day2 day3 day4 day5 day6 day7
 
 day1:
 	ghc -o day1 day1.hs && ./day1 < day1.in
@@ -18,6 +18,9 @@ day5:
 
 day6:
 	julia day6.jl
+
+day7:
+	lua day7.lua < day7.in
 
 .PHONY: clean
 clean:
