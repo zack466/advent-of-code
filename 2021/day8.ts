@@ -38,10 +38,19 @@ const compareLetter = (a: string, b: string) => {
   }
 };
 
-function getDigit(x: string) {
-  let letters = x.split("");
-  letters.sort(compareLetter);
-  return DECODE[letters.join("")];
+function setToString(x: Set<string>): string {
+  let l: string[] = [];
+  x.forEach((val: string) => l.push(val));
+  l.sort(compareLetter);
+  return l.join("");
+}
+
+function stringToSet(x: string): Set<string> {
+  return new Set(x);
+}
+
+function getDigit(x: Set<string>) {
+  return DECODE[setToString(x)];
 }
 
 const hasLength = (n: number) => (x: string) => x.length === n;
@@ -74,7 +83,7 @@ function reduce(rules: any) {
 
 function solB() {
   for (let line of lines) {
-    let rules: any = {}; // Set(encoded) <=> Set(decoded)
+    let rules: Record<string, string> = {}; // Set(encoded) <=> Set(decoded)
     let [patterns, output] = line.split("|").map(cleanSplit(" "));
     patterns.find(hasLength(2));
     for (let pattern of patterns) {
