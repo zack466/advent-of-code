@@ -1,5 +1,6 @@
 .PHONY: all
-all: day1 day2 day3 day4 day5 day6 day7 day8
+all: day1 day2 day3 day4 day5 day6 day7 day8 day9 \
+	day10 day11 day12 day13 day14
 
 day1:
 	ghc -o day1 day1.hs && ./day1 < day1.in
@@ -24,6 +25,24 @@ day7:
 
 day8:
 	deno run --allow-read day8.ts
+
+day9:
+	python3 day9.py
+
+day10:
+	python3 day10.py
+
+day11:
+	python3 day11.py
+	
+day12:
+	python3 day12.py
+
+day13:
+	python3 day13.py
+
+day14:
+	python3 day14.py
 
 .PHONY: clean
 clean:
