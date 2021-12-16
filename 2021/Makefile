@@ -1,6 +1,6 @@
 .PHONY: all
 all: day1 day2 day3 day4 day5 day6 day7 day8 day9 \
-	day10 day11 day12 day13 day14
+	day10 day11 day12 day13 day14 day15
 
 day1:
 	ghc -o day1 day1.hs && ./day1 < day1.in
@@ -43,6 +43,9 @@ day13:
 
 day14:
 	python3 day14.py
+
+day15:
+	python3 day15.py
 
 .PHONY: clean
 clean:
