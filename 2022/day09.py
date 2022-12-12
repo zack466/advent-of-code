@@ -1,4 +1,4 @@
-with open("day9.in", 'r') as f:
+with open("day09.in", 'r') as f:
     lines = list(map(lambda x: x.strip(), f.readlines()))
 
 H_x = 0

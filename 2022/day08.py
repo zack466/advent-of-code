@@ -1,4 +1,4 @@
-with open("day8.in", 'r') as f:
+with open("day08.in", 'r') as f:
     lines = list(map(lambda x: x.strip(), f.readlines()))
     lines = list(map(lambda x: list(map(int, x)), lines))
     N = len(lines)

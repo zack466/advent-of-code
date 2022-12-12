@@ -1,4 +1,4 @@
-with open("day3.in", 'r') as f:
+with open("day03.in", 'r') as f:
     lines = list(map(lambda x: x.strip(), f.readlines()))
 
 score = lambda c:(lambda d:[d+58,d][d>0])(ord(c)-96)

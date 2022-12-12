@@ -1,6 +1,6 @@
 from typing import Dict
 
-with open("day7.in", 'r') as f:
+with open("day07.in", 'r') as f:
     lines = list(map(lambda x: x.strip(), f.readlines()))
 
 root = {}

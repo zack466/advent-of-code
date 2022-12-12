@@ -2,7 +2,7 @@ import re
 
 parse = re.compile("(\\d+)-(\\d+),(\\d+)-(\\d+)")
 
-with open("day4.in", 'r') as f:
+with open("day04.in", 'r') as f:
     lines = f.readlines()
     intervals = list(map(lambda line: tuple(map(int, parse.match(line).groups())), lines)) # type: ignore[override]
 

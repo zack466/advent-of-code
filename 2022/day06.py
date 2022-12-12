@@ -1,4 +1,4 @@
-with open("day6.in", 'r') as f:
+with open("day06.in", 'r') as f:
     data = f.read().strip()
 
 for i in range(len(data) - 4):

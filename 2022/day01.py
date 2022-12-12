@@ -1,4 +1,4 @@
-with open("day1.in", 'r') as f:
+with open("day01.in", 'r') as f:
     lines = f.readlines()
 
 totals = []

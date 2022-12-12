@@ -1,5 +1,5 @@
 # code golfed version (no regrets)
-ls = list(map(lambda x:x[:3],open("day2.in").readlines()))
+ls = list(map(lambda x:x[:3],open("day02.in").readlines()))
 k = lambda c:(lambda d:[d%3,~-d%3][d<87])(~-ord(c))
 
 # part 1

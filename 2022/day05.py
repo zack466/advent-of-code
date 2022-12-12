@@ -2,7 +2,7 @@ import re
 
 parse = re.compile("move (\\d+) from (\\d+) to (\\d+)")
 
-with open("day5.in", 'r') as f:
+with open("day05.in", 'r') as f:
     lines = f.readlines()
     instructions = list(map(lambda line: tuple(map(int, parse.match(line).groups())), lines)) # type: ignore[override]
 
