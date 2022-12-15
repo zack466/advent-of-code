@@ -1,5 +1,4 @@
 import re
-from collections import Counter
 
 DATA = re.compile("Sensor at x=(-?\\d+), y=(-?\\d+): closest beacon is at x=(-?\\d+), y=(-?\\d+)")
 
@@ -11,12 +10,8 @@ data = [list(map(int, DATA.match(line).groups())) for line in lines]
 def distance(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
 
-min_x = min(([min(d[0], d[2]) for d in data])) - 1000000
-max_x = max(([max(d[0], d[2]) for d in data])) + 1000000
-
-s = set()
-
 # part 1
+# s = set()
 # exclude = [(d[2], d[3]) for d in data]
 
 # for x1, y1, x2, y2 in data:
@@ -45,7 +40,6 @@ def at_dist(x, y, d):
     return s
 
 def search():
-    s = Counter()
     for x1, y1, x2, y2 in data:
         print(x1, y1)
         d = distance(x1, y1, x2, y2) + 1
@@ -64,7 +58,6 @@ def search():
             if good:
                 print(xdx, ydy, xdx*4000000 + ydy)
                 return
-    return s
 
 # running with pypy recommended lmao
 search()
